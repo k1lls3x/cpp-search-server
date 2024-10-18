@@ -62,9 +62,9 @@ public:
     void AddDocument(int document_id, const string& document) { // добавление док-ов и вычисление tf
         const vector<string> words = SplitIntoWordsNoStop(document);
         document_count_++;
+        double inv_word_count = 1.0 / words.size(); // -факап
 
         for (const string& word : words) {
-            double inv_word_count = 1.0 / words.size();
             word_to_document_freqs_[word][document_id] += inv_word_count;
         }
     }
