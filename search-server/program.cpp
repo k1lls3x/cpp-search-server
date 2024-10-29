@@ -2,6 +2,7 @@
 #include <cmath>
 #include <iostream>
 #include <map>
+#include <numeric>
 #include <set>
 #include <string>
 #include <utility>
@@ -88,9 +89,9 @@ public:
              [](const Document& lhs, const Document& rhs) {
                  if (abs(lhs.relevance - rhs.relevance) < EPSILON) {
                      return lhs.rating > rhs.rating;
-                 } else {
+                 } 
                      return lhs.relevance > rhs.relevance;
-                 }
+    
              });
         if (matched_documents.size() > MAX_RESULT_DOCUMENT_COUNT) {
             matched_documents.resize(MAX_RESULT_DOCUMENT_COUNT);
@@ -98,12 +99,9 @@ public:
         return matched_documents;
     }
     vector<Document> FindTopDocuments(const string& raw_query) const { 
-        return FindTopDocuments(raw_query,[](int , DocumentStatus status ,int ){
-           return status == DocumentStatus::ACTUAL;
-        });
-    
-
+        return FindTopDocuments(raw_query,DocumentStatus::ACTUAL );
     }
+    
      vector<Document> FindTopDocuments(const string& raw_query,const DocumentStatus& status) const{
             return FindTopDocuments(raw_query,[&status](int, DocumentStatus doc_s, int){
                 return status == doc_s;
@@ -166,10 +164,10 @@ private:
         if (ratings.empty()) {
             return 0;
         }
-        int rating_sum = 0;
-        for (const int rating : ratings) {
-            rating_sum += rating;
-        }
+        int rating_sum = std::accumulate(begin(ratings),end(ratings),0);
+        // for (const int rating : ratings) {
+        //     rating_sum += rating;
+        // }
         return rating_sum / static_cast<int>(ratings.size());
     }
 
