@@ -1,15 +1,30 @@
-// Решите загадку: Сколько чисел от 1 до 1000 содержат как минимум одну цифру 3?
-// Напишите ответ здесь:
-/*
-   
-       int count = 0;
+// main.cpp
+#include "search_server.h"
+#include "request_queue.h"
+#include "paginator.h"
+#include <iostream>
+#include <vector>
+#include <string>
 
-    for (int i = 1; i <= 1000; ++i) {
-        std::string number = std::to_string(i);
-        
-        if (number.find('3') != std::string::npos) {
-            ++count; 
-        }
+using namespace std::literals;
+int main() {
+    SearchServer search_server("and in at"s);
+    RequestQueue request_queue(search_server);
+    search_server.AddDocument(1, "curly cat curly tail"s, DocumentStatus::ACTUAL, {7, 2, 7});
+    search_server.AddDocument(2, "curly dog and fancy collar"s, DocumentStatus::ACTUAL, {1, 2, 3});
+    search_server.AddDocument(3, "big cat fancy collar "s, DocumentStatus::ACTUAL, {1, 2, 8});
+    search_server.AddDocument(4, "big dog sparrow Eugene"s, DocumentStatus::ACTUAL, {1, 3, 2});
+    search_server.AddDocument(5, "big dog sparrow Vasiliy"s, DocumentStatus::ACTUAL, {1, 1, 1});
+    // 1439 запросов с нулевым результатом
+    for (int i = 0; i < 1439; ++i) {
+        request_queue.AddFindRequest("empty request"s);
     }
-*/
-// Закомитьте изменения и отправьте их в свой репозиторий.
+    // все еще 1439 запросов с нулевым результатом
+    request_queue.AddFindRequest("curly dog"s);
+    // новые сутки, первый запрос удален, 1438 запросов с нулевым результатом
+    request_queue.AddFindRequest("big collar"s);
+    // первый запрос удален, 1437 запросов с нулевым результатом
+    request_queue.AddFindRequest("sparrow"s);
+    std::cout << "Total empty requests: "s << request_queue.GetNoResultRequests() << std::endl;
+    return 0;
+}
